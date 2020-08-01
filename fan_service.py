@@ -1,29 +1,6 @@
 """
-fan_service.py
+toml_test.py
 
-Program to run as a service and control the Yahboom RGB Fan Hat for the RPI
-
-MIT License
-
-Copyright (c) [2020] [Jon Haun]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 """
 
 import time
@@ -31,7 +8,7 @@ import os
 import re
 import signal
 import smbus
-import json
+import toml
 from os import path
 
 import Adafruit_GPIO.I2C as I2C
@@ -56,7 +33,7 @@ class RGBFanManager:
     # Other Constants
     MAX_LED = 3
     WRITE_SLEEP = 0.25
-    BEHAVIOR_FILE = "/usr/local/share/RGBHatInterface/behavior.json"
+    BEHAVIOR_FILE = "behavior.toml" #"/usr/local/share/RGBHatInterface/behavior.json"
     DEFAULT_MESSAGE = "Hostname: " + subprocess.check_output('hostname', shell = True).decode('utf-8')
     
     # speed steps (0x00 = 0%, 0x01 = 100%)
@@ -128,6 +105,38 @@ class RGBFanManager:
         #font = ImageFont.truetype('8bitM.ttf', 8)
         self.font = ImageFont.load_default()
 
+    """Data Read Functions"""
+    def getCPULoadRate(self):
+        f1 = os.popen("cat /proc/stat", 'r')
+        stat1 = f1.readline()
+        count = 10
+        data_1 = []
+        for i  in range (count):
+            data_1.append(int(stat1.split(' ')[i+2]))
+        total_1 = data_1[0]+data_1[1]+data_1[2]+data_1[3]+data_1[4]+data_1[5]+data_1[6]+data_1[7]+data_1[8]+data_1[9]
+        idle_1 = data_1[3]
+    
+        time.sleep(1)
+    
+        f2 = os.popen("cat /proc/stat", 'r')
+        stat2 = f2.readline()
+        data_2 = []
+        for i  in range (count):
+            data_2.append(int(stat2.split(' ')[i+2]))
+        total_2 = data_2[0]+data_2[1]+data_2[2]+data_2[3]+data_2[4]+data_2[5]+data_2[6]+data_2[7]+data_2[8]+data_2[9]
+        idle_2 = data_2[3]
+    
+        total = int(total_2-total_1)
+        idle = int(idle_2-idle_1)
+        usage = int(total-idle)
+        usageRate =int(float(usage * 100/ total))
+        return "CPU:"+str(usageRate)+"%"
+    
+    def getTemp(self):
+        cmd = os.popen('vcgencmd measure_temp').readline()
+        return float(cmd.replace("temp=","").replace("'C\n",""))
+
+    """Set Functions"""
     def lightsOut(self):
         self.bus.write_byte_data(self.HAT_ADDR, self.OFF_REG, 0x00)
         time.sleep(self.WRITE_SLEEP)
@@ -165,36 +174,6 @@ class RGBFanManager:
             self.bus.write_byte_data(self.HAT_ADDR, self.SPEED_REG, speed&0xff)
             time.sleep(self.WRITE_SLEEP)
     
-    def getCPULoadRate(self):
-        f1 = os.popen("cat /proc/stat", 'r')
-        stat1 = f1.readline()
-        count = 10
-        data_1 = []
-        for i  in range (count):
-            data_1.append(int(stat1.split(' ')[i+2]))
-        total_1 = data_1[0]+data_1[1]+data_1[2]+data_1[3]+data_1[4]+data_1[5]+data_1[6]+data_1[7]+data_1[8]+data_1[9]
-        idle_1 = data_1[3]
-    
-        time.sleep(1)
-    
-        f2 = os.popen("cat /proc/stat", 'r')
-        stat2 = f2.readline()
-        data_2 = []
-        for i  in range (count):
-            data_2.append(int(stat2.split(' ')[i+2]))
-        total_2 = data_2[0]+data_2[1]+data_2[2]+data_2[3]+data_2[4]+data_2[5]+data_2[6]+data_2[7]+data_2[8]+data_2[9]
-        idle_2 = data_2[3]
-    
-        total = int(total_2-total_1)
-        idle = int(idle_2-idle_1)
-        usage = int(total-idle)
-        usageRate =int(float(usage * 100/ total))
-        return "CPU:"+str(usageRate)+"%"
-    
-    def getTemp(self):
-        cmd = os.popen('vcgencmd measure_temp').readline()
-        return float(cmd.replace("temp=","").replace("'C\n",""))
-    
     def displayStatusMsg(self):
         # Draw a black filled box to clear the image.
         self.draw.rectangle((0,0,self.width,self.height), outline=0, fill=0)
@@ -215,17 +194,26 @@ class RGBFanManager:
         self.disp.image(self.image)
         self.disp.display()
         time.sleep(.1)
-        
+    
+    """Behavior Management Functions"""
     def modBehavior(self):
         return path.exists(self.BEHAVIOR_FILE)
     
     def readBehavior(self):
         with open(self.BEHAVIOR_FILE) as f:
-          return json.load(f)
+          return toml.load(f)
     
-    def storeBehavior(self, data):
-        with open(self.BEHAVIOR_FILE, 'w') as json_file:
-            json.dump(data, json_file, indent=4, sort_keys=True)
+    def manageBehavior(self):
+        data = self.readBehavior()
+        
+        self.message = data['OLED']['message'] if 'OLED' in data else m.DEFAULT_MESSAGE
+        self.displayBehavior()
+        
+        if 'Fan' in data: self.setFanSpeed(data['Fan']['speed'])
+        
+        if 'RGB' in data:
+            for i in range(len(data['RGB'])):
+                self.setRGB(i, data['RGB'][i]['r'], data['RGB'][i]['g'], data['RGB'][i]['b'] )   
     
     def displayBehavior(self):
         # Draw a black filled box to clear the image.
@@ -237,18 +225,7 @@ class RGBFanManager:
         self.disp.display()
         time.sleep(.1)
     
-    def manageBehavior(self):
-        data = self.readBehavior()
-        
-        self.message = data['message'] if 'message' in data else self.DEFAULT_MESSAGE
-        self.displayBehavior()
-        
-        if 'fan' in data: self.setFanSpeed(data['fan'])
-        
-        if 'RGB' in data:
-            for i in range(len(data['RGB'])):
-                self.setRGB(i, data['RGB'][i][0], data['RGB'][i][1], data['RGB'][i][2] )
-        
+    """Core Execution Function"""
     def run(self):
         
         try:
@@ -313,6 +290,7 @@ class RGBFanManager:
 if __name__ == '__main__':
     
     m = RGBFanManager(high=59, med=48, low=37)
+        
     m.run()
 
     # shutdown gracefully

@@ -1,17 +1,36 @@
 
-# Overview
-title       = "RGB Fan HAT Override File"
-description = "Fan HAT behavior modification system"
+### Overview
+# This is used to mannually override the Fan HAT service behavior
+# Author  : Jon Haun
+# License : See MIT license in script
+#
+# Use the behavior.toml file to override the behavior of the RGB fan hat.
+#
+#        behavior.toml = read and override
+#        _behavior.toml = default behavior
+#
+# Removing the '_' from the file name will activate the override function of the
+# service and begin executing the settings below.
+#
+# To make more direct changes to the behavior of the fan hat make sure to stop 
+# the associated fan hat service
+#
+#    sudo systemctl [start|stop] fan_hat.service
+###
+
+# Version Data
 version     = "1.0.0"
 updated     = 2020-08-01
-author      = "Jon Haun"
 
+# Fan Control
 [Fan]
 speed = 5
 
+# OLED management
 [OLED]
-message = "Testing TOML"
+message = "Override Active"
 
+# List of RGB colors matching the 3 LEDs on the board
 [[RGB]]
 r = 0
 g = 0

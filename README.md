@@ -9,6 +9,14 @@ This project is made up of three simple files.
 2) Systemd Service definition file (systemctl)
 3) TOML behavior override file
 
+#### Requirements
+1) Raspberry Pi (tested on RPi 4B)
+2) Python3 (tested on 3.7.8)
+3) PIP Packages listed in the 'requirements.txt' file
+    
+>NOTE: I had to shortuct the platform identifacation in file python3.7/site-packages/Adafruit_GPIO/GPIO.py on line 420. The lookup didn't identify the system as a Raspberry Pi. This appears to be a missmatch in the latest RPi image and the Adafruit package. It worked before I made the most recent image update, and with the tweak to the code it works again. I'm hoping this resolves in later updates. (action is to change line 419 to `if True:`)
+
+
 #### Installation
 0) GIT the files
 

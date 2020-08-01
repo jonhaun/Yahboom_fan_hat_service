@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 Restart=always
-ExecStart=/home/pi/.pyenv/shims/python /usr/local/bin/fan_service.py
+ExecStart=/usr/bin/python3 /usr/local/bin/fan_service.py
 
 [Install]
 WantedBy=multi-user.target

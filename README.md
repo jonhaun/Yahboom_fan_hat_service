@@ -1,6 +1,6 @@
 ## Yahboom_fan_hat_service
 #### Concept
-The goal is to create a solution that runs in the background as a service to provide cooling and default information about the Raspberry Pi, while still allowing for on demand modification of the behavior. The hardware is created by Yahboom described on their website [here](https://www.yahboom.net/study/RGB_Cooling_HAT). The scripts provided by Yahboom are not very straightforward to understand, so this setup is designed to provide a somewhat easier way to interact with the hardware.
+The goal is to create a solution that runs in the background as a service to provide cooling and default information about the Raspberry Pi, while still allowing for on demand modification of the behavior. The hardware is created by Yahboom described on their website [here](https://www.yahboom.net/study/RGB_Cooling_HAT). The scripts and instructions provided by Yahboom are not very straightforward to understand, so this setup is designed to provide a somewhat easier way to interact with the hardware.
 
 #### Implementation
 This project is made up of three simple files.
@@ -54,7 +54,7 @@ The TOML file (behavior.toml) describes how to override each of the functions of
 > NOTE: Not all the functions are implemented yet. I'm working the Effects, Blanking, Multi-line messages, and Moving Messages.
 
 #### Copyright and Disclaimer
-This is a hobby project that I felt was worth sharing with others. I'm not doing this with the intent to generate any compensation, and may not make regular updates. As such:
+This is a hobby project that I felt was worth sharing with others. I'm not doing this with the intent to generate any compensation, and may not make regular updates. I am not affiliated with Yahboom or Raspberry Pi As such:
 
 MIT License
 

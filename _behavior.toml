@@ -1,0 +1,28 @@
+
+# Overview
+title       = "RGB Fan HAT Override File"
+description = "Fan HAT behavior modification system"
+version     = "1.0.0"
+updated     = 2020-08-01
+author      = "Jon Haun"
+
+[Fan]
+speed = 5
+
+[OLED]
+message = "Testing TOML"
+
+[[RGB]]
+r = 0
+g = 0
+b = 255
+
+[[RGB]]
+r = 0
+g = 255
+b = 0
+
+[[RGB]]
+r = 255
+g = 0
+b = 0

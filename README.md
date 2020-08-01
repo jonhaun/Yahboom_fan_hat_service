@@ -51,6 +51,8 @@ The RGB Fan boots to show the CPU utilization, Temperature, Hostname, and IP add
 ###### Override Behavior
 The TOML file (behavior.toml) describes how to override each of the functions of the fan HAT. When the file is present, all other behaviors are suspended except for what is described in the file. Uncomment and changes the values to meet your needs. To make the file 'present' or active, simply rename the '_behavior.toml' to 'behavior.toml' in the target directory. Changing the name (e.g. back to _behavior.toml) will return the service to the default behavior.
 
+> NOTE: Not all the functions are implemented yet. I'm working the Effects, Blanking, Multi-line messages, and Moving Messages.
+
 #### Copyright and Disclaimer
 This is a hobby project that I felt was worth sharing with others. I'm not doing this with the intent to generate any compensation, and may not make regular updates. As such:
 

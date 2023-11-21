@@ -1,3 +1,5 @@
+[NOTE] I'm no longer updating this, but it's at the 90% complete state and I noticed I didn't make it public. I am not using this hardware anymore, so I'm not making changes.
+
 ## Yahboom_fan_hat_service
 #### Concept
 The goal is to create a solution that runs in the background as a service to provide cooling and default information about the Raspberry Pi, while still allowing for on demand modification of the behavior. The hardware is created by Yahboom described on their website [here](https://www.yahboom.net/study/RGB_Cooling_HAT). The scripts and instructions provided by Yahboom are not very straightforward to understand, so this setup is designed to provide a somewhat easier way to interact with the hardware.

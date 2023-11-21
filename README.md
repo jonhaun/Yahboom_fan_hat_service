@@ -1,4 +1,4 @@
-[NOTE] I'm no longer updating this, but it's at the 90% complete state and I noticed I didn't make it public. I am not using this hardware anymore, so I'm not making changes.
+>NOTE: I'm no longer updating this, but it's at the 90% complete state and I noticed I didn't make it public. I am not using this hardware anymore, so I'm not making changes.
 
 ## Yahboom_fan_hat_service
 #### Concept
